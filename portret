@@ -1,0 +1,56 @@
+import matplotlib.pyplot as plt  
+import math                      
+e1=0.4        
+e2=0.6        
+r1=30
+r2=60
+rmin=50
+Q10=1
+Q20=1
+dt=0.000001 # малый промежуток времени
+p=0.003     # Цена
+g=3000 # Возмущения (рост или падение экономики)
+A=0.3  # Прибыльность предпринимательской деятельности
+Um=[2,4,2,3]# Начальные условия U
+Pm=[3,5,1,3]# Начальные условия P
+def Q1(r):  
+    return Q10*(r/(r+r1)+e1*r)
+
+def Q2(r):  
+    if (r>rmin):
+        k=1
+    else:
+        k=0 #Реализация теты
+    return k*(Q20*(r-rmin)/(r-rmin+r2)+e2*(r-rmin))
+
+def ksi(t): #Норм.распр.
+    return g*math.exp(-t**2)
+
+def P(U):
+    #return P1             # работяги
+    #return P2             # специалисты
+    return A*U+P0         # предприниматели
+
+
+j=0
+while j<4: #Запуск построения 4 линий
+    i=0
+    U=Um[j]
+    P1=P2=P0=Pm[j]       
+    Plast=P(U)           #Запомним состояние P
+    t=0                  #Отсчет времени с нуля
+    while i<=100:        #Построение линий по 100 отрезкам
+        dU=dt*(Plast-Q1(U/p)-Q2(U/p)+ksi(t)) #Изменение U (численный метод)
+        Ulast=U
+        U+=dU
+        t+=dt    #Время считаем от нуля
+        if(i<20):
+            plt.plot([Ulast,U],[Plast,P(U)],color="#C080C0") #Построение отрезка по 4 координатам
+        else:
+            plt.plot([Ulast,U],[Plast,P(U)],color="#E0C0E0") 
+        Plast=P(U)       #Запомним состояние P
+        i+=1
+    j+=1
+    
+
+plt.show() 
